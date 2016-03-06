@@ -1,2 +1,4 @@
-# test-amqp-client
-Client for interaction via AMQP protocol
+# Test AMQP client
+
+Client for interaction via AMQP protocol.
+
