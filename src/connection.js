@@ -18,11 +18,11 @@ function connect(host, callback) {
       conn.createChannel(function(err, channel) {
         channel.assertQueue('', {
             exclusive: true
-        }, function (err, q) {
+        }, function (err, queue) {
             if (err) {
                 return callback(err);
             }
-            callback(null, channel, q);
+            callback(null, channel, queue);
         });
       });
     });
