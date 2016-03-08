@@ -5,7 +5,7 @@ var uuid4 = require('uuid4');
 var TIMEOUT = 500;
 var DEFAULT_QUEUE = 'rpc_queue';
 
-function callRemoteProcedure(query, channel, queue, callback) {
+function callRemoteProcedure(channel, queue, query, callback) {
     var correlationId = uuid4();
 
     var timeout = setTimeout(function () {
