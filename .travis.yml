@@ -1,0 +1,8 @@
+services:
+  - docker
+before_install:
+    - curl https://raw.githubusercontent.com/gang-tetris/test-services-integration-test/master/trigger-test.sh -o tritter-test.sh
+    - curl https://raw.githubusercontent.com/gang-tetris/test-services-integration-test/master/body.json -o body.json
+script:
+  - docker build .
+  - sh trigger-test.sh gang-tetris test-services-integration-test
