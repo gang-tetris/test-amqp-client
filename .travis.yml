@@ -7,5 +7,5 @@ script:
 - docker build .
 after_success:
 - export FILE_CONTENT=$(base64 <(echo "export TEST_AMQP_CLIENT_COMMIT=\"${TRAVIS_COMMIT}\"") -w 0)
-- export COMMIT_MESSAGE="Triggering tests\n\nChanges ${TRAVIS_COMMIT_RANGE} in ${TRAVIS_BRANCH}"
+- export COMMIT_MESSAGE="Triggering tests due to changes ${TRAVIS_COMMIT_RANGE} in ${TRAVIS_BRANCH}"
 - sh update-config.sh gang-tetris test-services-integration-test test-amqp-client-config.sh "${FILE_CONTENT}" "${COMMIT_MESSAGE}"
