@@ -5,5 +5,4 @@ before_install:
     - curl https://raw.githubusercontent.com/gang-tetris/test-services-integration-test/master/body.json -o body.json
 script:
   - docker build .
-  - export GIT_TOKEN
   - sh trigger-test.sh gang-tetris test-services-integration-test
