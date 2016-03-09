@@ -9,5 +9,5 @@ after_success:
 - export FILE_CONTENT=$(base64 <(echo "export TEST_AMQP_CLIENT_COMMIT=\"${TRAVIS_COMMIT}\"") -w 0)
 - export COMMIT_DESCRIPTION="Changes ${TRAVIS_COMMIT_RANGE} in ${TRAVIS_BRANCH} of test-amqp-client"
 - export COMMIT_TITLE="Triggering tests"
-- export COMMIT_MESSAGE="${COMMIT_TITLE}$. ${COMMIT_DESCRIPTION}"
+- export COMMIT_MESSAGE="${COMMIT_TITLE}\\\n\\\n${COMMIT_DESCRIPTION}"
 - sh update-config.sh gang-tetris test-services-integration-test test-amqp-client-config.sh "${FILE_CONTENT}" "${COMMIT_MESSAGE}"
