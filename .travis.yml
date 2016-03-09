@@ -6,6 +6,6 @@ before_install:
 script:
 - docker build .
 after_success:
-- export FILE_CONTENT=$(base64 <(echo "export TEST_AMQP_CLIENT_COMMIT=\"${TRAVIS_COMMIT}\""))
+- export FILE_CONTENT=$(base64 <(echo "export TEST_AMQP_CLIENT_COMMIT=\"${TRAVIS_COMMIT}\"") -w 0)
 - export COMMIT_MESSAGE="Triggering tests"
 - sh update-config.sh gang-tetris test-services-integration-test test-amqp-client-config.sh "${FILE_CONTENT}" "${COMMIT_MESSAGE}"
