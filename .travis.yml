@@ -4,5 +4,6 @@ before_install:
 - curl https://raw.githubusercontent.com/gang-tetris/test-services-integration-test/master/update-config.sh -o update-config.sh
 - curl https://raw.githubusercontent.com/gang-tetris/test-services-integration-test/master/config-update.json -o config-update.json
 script:
-- echo 'Pass'
-- sh update-config.sh gang-tetris test-services-integration-test test-amqp-client-config.sh $(base64 <(echo "export TEST_AMQP_CLIENT_COMMIT=\"${TRAVIS_COMMIT}\"")) "Triggering tests\n\nChanges ${TRAVIS_COMMIT_RANGE} in ${TRAVIS_BRANCH}"
+- docker build .
+after_success:
+- sh update-config.sh gang-tetris test-services-integration-test test-amqp-client-config.sh <(base64 "export TEST_AMQP_CLIENT_COMMIT=\"${TRAVIS_COMMIT}\"") "Triggering tests\n\nReason: changes ${TRAVIS_COMMIT_RANGE} in ${TRAVIS_BRANCH}"
