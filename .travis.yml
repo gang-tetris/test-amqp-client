@@ -6,4 +6,4 @@ before_install:
 script:
 - docker build .
 after_success:
-- sh update-config.sh "gang-tetris/test-services-integration-test" "test-amqp-client"
+- bash update-config.sh "gang-tetris/test-services-integration-test" "test-amqp-client"
