@@ -1,6 +1,6 @@
 'use strict';
 
-var amqp = require('amqplib/callback_api');
+var amqp = require('amqplib');
 var uuid4 = require('uuid4');
 var assert = require('assert');
 
@@ -16,19 +16,18 @@ class RabbitClient {
     connect (callback) {
         assert(typeof callback === 'function');
 
-        amqp.connect(this._host, (err, conn) => {
-            conn.createChannel((err, channel) => {
+        amqp.connect(this._host).then((conn) => {
+            return conn.createChannel().then((channel) => {
                 channel.assertQueue('', {
                     exclusive: true
-                }, (err, queue) => {
-                    if (err) {
-                        return callback(err);
-                    }
+                }).then((queue) => {
                     this._channel = channel;
                     this._queue = queue.queue;
                     callback(null);
                 });
             });
+        }, (err) => {
+            callback(err);
         });
     }
     rpc (query, callback) {
