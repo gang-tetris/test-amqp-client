@@ -1,10 +1,13 @@
 'use strict';
 
+const PORT = 8080;
+
 var RabbitClient = require('./RabbitClient');
 var RestServer = require('./RestServer');
 
-var client = new RabbitClient();
-client.connect().then(() => {
-    var restServer = new RestServer(client);
+var rabbitClient = new RabbitClient();
+var restServer = new RestServer(rabbitClient);
+rabbitClient.connect().then(() => {
+    restServer.connect(PORT);
 }, console.error);
 

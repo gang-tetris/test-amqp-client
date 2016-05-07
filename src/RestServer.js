@@ -4,21 +4,20 @@ var express = require('express');
 var assert = require('assert');
 var RabbitClient = require('./RabbitClient');
 
-const PORT = 8080;
 const DEFAULT_NAME = 'Anonymous';
 
 class RestServer {
     constructor (rabbitClient) {
         assert(rabbitClient instanceof RabbitClient);
-        this.rabbitClient = rabbitClient;
+        this._rabbitClient = rabbitClient;
+        this._app = express();
+    }
+    connect (port) {
+        this._app.param('person_name', this.fetchPersonMiddleware.bind(this));
+        this._app.get('/', this.getAnonymous.bind(this));
+        this._app.get('/:person_name', this.getPerson);
 
-        var app = express();
-
-        app.param('person_name', this.fetchPersonMiddleware);
-        app.get('/', this.getAnonymous);
-        app.get('/:person_name', this.getPerson);
-
-        app.listen(PORT);
+        this._app.listen(port);
         console.log('Application is ready');
     }
     getPerson (req, res) {
@@ -46,7 +45,7 @@ class RestServer {
         });
     }
     findPerson (name, callback) {
-        this.rabbitClient.rpc(name, function (err, msg) {
+        this._rabbitClient.rpc(name, function (err, msg) {
             if (err) {
                 console.error(` [e] failed with ${err}`);
                 return callback(err);
@@ -57,6 +56,5 @@ class RestServer {
     }
 }
 
-//module.exports = init;
 module.exports = RestServer;
 
