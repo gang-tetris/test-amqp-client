@@ -13,10 +13,8 @@ class RabbitClient {
         assert(!host || typeof host === 'string');
         this._host = host || DEFAULT_HOST;
     }
-    connect (callback) {
-        assert(typeof callback === 'function');
-
-        amqp.connect(this._host).then((conn) => {
+    connect () {
+        return amqp.connect(this._host).then((conn) => {
             return conn.createChannel();
         }).then((channel) => {
             this._channel = channel;
@@ -25,7 +23,6 @@ class RabbitClient {
             });
         }).then((queue) => {
             this._queue = queue.queue;
-            callback(null);
         });
     }
     rpc (query, callback) {
@@ -40,13 +37,7 @@ class RabbitClient {
         }, TIMEOUT);
 
         this._channel.consume(this._queue, (msg) => {
-            if (msg.properties.correlationId !== correlationId) {
-              console.log(` [i] Waiting for ${correlationId} got ${msg.properties.correlationId}`);
-              return;
-            }
-            clearTimeout(timeout);
-            this._channel.cancel(correlationId);
-            callback(null, msg);
+            consume(this._channel, msg, correlationId, timeout, callback);
         }, {
             noAck: true,
             consumerTag: correlationId
@@ -58,6 +49,16 @@ class RabbitClient {
             expiration: TIMEOUT.toString()
         });
     }
+}
+
+function consume (channel, msg, correlationId, timeout, callback) {
+    if (msg.properties.correlationId !== correlationId) {
+      console.log(` [i] Waiting for ${correlationId} got ${msg.properties.correlationId}`);
+      return;
+    }
+    clearTimeout(timeout);
+    channel.cancel(correlationId);
+    callback(null, msg);
 }
 
 module.exports = RabbitClient;
