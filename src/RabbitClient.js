@@ -17,17 +17,15 @@ class RabbitClient {
         assert(typeof callback === 'function');
 
         amqp.connect(this._host).then((conn) => {
-            return conn.createChannel().then((channel) => {
-                channel.assertQueue('', {
-                    exclusive: true
-                }).then((queue) => {
-                    this._channel = channel;
-                    this._queue = queue.queue;
-                    callback(null);
-                });
+            return conn.createChannel();
+        }).then((channel) => {
+            this._channel = channel;
+            return channel.assertQueue('', {
+                exclusive: true
             });
-        }, (err) => {
-            callback(err);
+        }).then((queue) => {
+            this._queue = queue.queue;
+            callback(null);
         });
     }
     rpc (query, callback) {
