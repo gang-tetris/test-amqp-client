@@ -1,21 +1,10 @@
 'use strict';
 
-var busConnect = require('./connection');
+var RabbitClient = require('./RabbitClient');
 var restConnect = require('./rest');
-var callRemoteProcedure = require('./rpc');
 
-var client = {
-    channel: null,
-    queue: null,
-    rpc: null
-};
-
-busConnect(function(err, channel, queue) {
-    client.channel = channel;
-    client.queue = queue.queue;
-    client.rpc = callRemoteProcedure.bind(client, client.channel, client.queue);
-    console.log('Rabbit connection is ready');
+var client = new RabbitClient();
+client.connect(() => {
+    restConnect(client);
 });
-
-restConnect(client);
 
