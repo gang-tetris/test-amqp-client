@@ -1,10 +1,10 @@
 'use strict';
 
 var RabbitClient = require('./RabbitClient');
-var restConnect = require('./rest');
+var RestServer = require('./RestServer');
 
 var client = new RabbitClient();
-client.connect(() => {
-    restConnect(client);
-});
+client.connect().then(() => {
+    var restServer = new RestServer(client);
+}, console.error);
 
