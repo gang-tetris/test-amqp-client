@@ -17,8 +17,11 @@ class RestServer {
         this._app.get('/', this.getAnonymous.bind(this));
         this._app.get('/:person_name', this.getPerson);
 
-        this._app.listen(port);
+        this._server = this._app.listen(port);
         console.log('Application is ready');
+    }
+    close () {
+        this._server.close();
     }
     getPerson (req, res) {
         res.json({

@@ -14,8 +14,9 @@ class RabbitClient {
         this._host = host || DEFAULT_HOST;
     }
     connect () {
-        return amqp.connect(this._host).then((conn) => {
-            return conn.createChannel();
+        return amqp.connect(this._host).then((connection) => {
+            this._connection = connection;
+            return connection.createChannel();
         }).then((channel) => {
             this._channel = channel;
             return channel.assertQueue('', {
@@ -24,6 +25,9 @@ class RabbitClient {
         }).then((queue) => {
             this._queue = queue.queue;
         });
+    }
+    close () {
+        return this._connection.close();
     }
     rpc (query, callback) {
         assert(!!this._channel && !!this._queue);
