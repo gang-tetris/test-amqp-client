@@ -11,3 +11,9 @@ rabbitClient.connect().then(() => {
     restServer.connect(PORT);
 }, console.error);
 
+process.on('SIGINT', () => {
+    rabbitClient.close();
+    restServer.close();
+    process.exit(0);
+});
+
