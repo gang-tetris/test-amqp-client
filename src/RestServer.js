@@ -28,10 +28,10 @@ class RestServer {
 
     getPerson (req, res) {
         if (req.error) {
-            res.status(500).json({
+            return res.status(req.error.code || 500).json({
                 success: false,
-                error: req.error
-            })
+                error: req.error.msg
+            });
         }
         res.json({
             success: true,
@@ -44,12 +44,13 @@ class RestServer {
             name: req.body.name,
             age: req.body.age,
         }
+        console.log(query)
         this._rabbitClient.rpc(JSON.stringify(query), function (err, msg) {
             if (err) {
                 console.error(` [e] failed with ${err}`);
-                return res.status(500).json({
+                return res.status(err.code || 500).json({
                     success: false,
-                    error: err
+                    error: err.code? err : err.msg
                 });
             }
             console.log(` [.] Got ${msg.content.toString()}`);
@@ -61,10 +62,18 @@ class RestServer {
     fetchPersonMiddleware (request, response, next, person_name) {
         this.findPerson(person_name, (err, result) => {
             if (err) {
-                request.error = err;
+                request.error = {
+                    msg: String(err),
+                    code: 500
+                }
                 return next();
             }
-            request.greeting = JSON.parse(result).text;
+            result = JSON.parse(result);
+            if (!result.success) {
+                request.error = result.error;
+                return next();
+            }
+            request.greeting = result.text;
             return next();
         });
     }
