@@ -37,7 +37,10 @@ class RabbitClient {
 
         var timeout = setTimeout(() => {
             this._channel.cancel(correlationId);
-            callback('Timeout error');
+            callback({
+                code: 504,
+                msg: 'Timeout error'
+            });
         }, TIMEOUT);
 
         this._channel.consume(this._queue, (msg) => {
