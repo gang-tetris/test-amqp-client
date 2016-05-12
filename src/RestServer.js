@@ -1,6 +1,7 @@
 'use strict';
 
 var express = require('express');
+var bodyParser = require('body-parser');
 var assert = require('assert');
 var RabbitClient = require('./RabbitClient');
 
@@ -13,8 +14,8 @@ class RestServer {
         this._app = express();
     }
     connect (port) {
+        this._app.use(bodyParser.json());
         this._app.param('person_name', this.fetchPersonMiddleware.bind(this));
-        this._app.get('/', this.getAnonymous.bind(this));
         this._app.get('/:person_name', this.getPerson);
 
         this._server = this._app.listen(port);
