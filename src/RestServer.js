@@ -17,6 +17,7 @@ class RestServer {
         this._app.use(bodyParser.json());
         this._app.param('person_name', this.fetchPersonMiddleware.bind(this));
         this._app.get('/:person_name', this.getPerson);
+        this._app.post('/', this.postPerson.bind(this));
 
         this._server = this._app.listen(port);
         console.log('Application is ready');
@@ -37,16 +38,23 @@ class RestServer {
             response: req.greeting
         });
     }
-    getAnonymous (req, res) {
-        this.findPerson(DEFAULT_NAME, (err, result) => {
+    postPerson (req, res) {
+        var query = {
+            op: 'insert',
+            name: req.body.name,
+            age: req.body.age,
+        }
+        this._rabbitClient.rpc(JSON.stringify(query), function (err, msg) {
             if (err) {
-                res.send(err);
-                return;
+                console.error(` [e] failed with ${err}`);
+                return res.status(500).json({
+                    success: false,
+                    error: err
+                });
             }
-            res.json({
-                success: true,
-                response: result
-            });
+            console.log(` [.] Got ${msg.content.toString()}`);
+            var response = JSON.parse(msg.content.toString());
+            res.status(response.success? 201 : 500).json(response);
         });
     }
 
