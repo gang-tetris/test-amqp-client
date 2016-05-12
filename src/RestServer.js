@@ -24,7 +24,14 @@ class RestServer {
     close () {
         this._server.close();
     }
+
     getPerson (req, res) {
+        if (req.error) {
+            res.status(500).json({
+                success: false,
+                error: req.error
+            })
+        }
         res.json({
             success: true,
             response: req.greeting
@@ -42,14 +49,24 @@ class RestServer {
             });
         });
     }
+
     fetchPersonMiddleware (request, response, next, person_name) {
         this.findPerson(person_name, (err, result) => {
-            request.greeting = result;
+            if (err) {
+                request.error = err;
+                return next();
+            }
+            request.greeting = JSON.parse(result).text;
             return next();
         });
     }
+
     findPerson (name, callback) {
-        this._rabbitClient.rpc(name, function (err, msg) {
+        var query = {
+            op: 'select',
+            name: name
+        }
+        this._rabbitClient.rpc(JSON.stringify(query), function (err, msg) {
             if (err) {
                 console.error(` [e] failed with ${err}`);
                 return callback(err);
