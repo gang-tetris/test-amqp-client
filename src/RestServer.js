@@ -16,6 +16,8 @@ class RestServer {
     connect (port) {
         this._app.use(bodyParser.json());
         this._app.param('person_name', this.fetchPersonMiddleware.bind(this));
+
+        this._app.options('/', this.heartbeat);
         this._app.get('/:person_name', this.getPerson);
         this._app.post('/', this.postPerson.bind(this));
 
@@ -26,6 +28,9 @@ class RestServer {
         this._server.close();
     }
 
+    heartbeat (req, res) {
+        res.status(200).end();
+    }
     getPerson (req, res) {
         if (req.error) {
             return res.status(req.error.code || 500).json({
