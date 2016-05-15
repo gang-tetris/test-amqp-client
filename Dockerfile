@@ -12,7 +12,7 @@ RUN npm install
 COPY index.js /usr/src/app/
 COPY ./src /usr/src/app/src
 
-COPY ./start.sh /docker-entrypoint.sh
+COPY ./docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN apt-get update
 
