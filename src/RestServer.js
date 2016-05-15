@@ -47,10 +47,10 @@ class RestServer {
         console.log(query)
         this._rabbitClient.rpc(JSON.stringify(query), function (err, msg) {
             if (err) {
-                console.error(` [e] failed with ${err}`);
+                console.error(` [e] failed with ${err.msg}`);
                 return res.status(err.code || 500).json({
                     success: false,
-                    error: err.code? err : err.msg
+                    error: err.code? err.msg : err
                 });
             }
             console.log(` [.] Got ${msg.content.toString()}`);
@@ -63,8 +63,8 @@ class RestServer {
         this.findPerson(person_name, (err, result) => {
             if (err) {
                 request.error = {
-                    msg: String(err),
-                    code: 500
+                    msg: err.msg? err.msg : String(err),
+                    code: err.code || 500
                 }
                 return next();
             }
@@ -85,7 +85,7 @@ class RestServer {
         }
         this._rabbitClient.rpc(JSON.stringify(query), function (err, msg) {
             if (err) {
-                console.error(` [e] failed with ${err}`);
+                console.error(` [e] failed with ${err.msg}`);
                 return callback(err);
             }
             console.log(` [.] Got ${msg.content.toString()}`);
