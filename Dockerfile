@@ -12,12 +12,12 @@ RUN npm install
 COPY index.js /usr/src/app/
 COPY ./src /usr/src/app/src
 
-COPY ./start.sh ./start.sh
+COPY ./start.sh /docker-entrypoint.sh
 
 RUN apt-get update
 
 RUN apt-get install -y netcat
 
 EXPOSE 8080
-CMD [ "./start.sh" ]
+ENTRYPOINT [ "/docker-entrypoint.sh" ]
 
