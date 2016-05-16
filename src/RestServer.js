@@ -51,7 +51,14 @@ class RestServer {
         }
         console.log(query)
         this._rabbitClient.rpc(JSON.stringify(query), function (err, msg) {
-            if (err) {
+            var response = '';
+            if (msg && msg.content) {
+                msg = JSON.parse(msg.content.toString());
+                console.log(` [.] Got ${msg.toString()}`);
+                var response = msg;
+            }
+            if (err || !msg.success) {
+                err = err || msg.error || 'Error occured';
                 console.error(` [e] failed with ${err.msg}`);
                 return res.status(err.code || 500).json({
                     success: false,
