@@ -40,7 +40,7 @@ class RestServer {
         }
         res.json({
             success: true,
-            response: req.greeting
+            response: req.person
         });
     }
     postPerson (req, res) {
@@ -65,8 +65,8 @@ class RestServer {
                     error: err.code? err.msg : err
                 });
             }
-            console.log(` [.] Got ${msg.content.toString()}`);
-            var response = JSON.parse(msg.content.toString());
+            response.response = response.person;
+            delete response.person;
             res.status(response.success? 201 : 500).json(response);
         });
     }
@@ -85,7 +85,7 @@ class RestServer {
                 request.error = result.error;
                 return next();
             }
-            request.greeting = result.text;
+            request.person = result.person;
             return next();
         });
     }
