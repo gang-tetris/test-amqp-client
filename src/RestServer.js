@@ -38,9 +38,10 @@ class RestServer {
                 error: req.error.msg
             });
         }
+        req.result.rest = process.env.HOSTNAME || 'Rest';
         res.json({
             success: true,
-            response: req.person
+            response: req.result
         });
     }
     postPerson (req, res) {
@@ -65,8 +66,7 @@ class RestServer {
                     error: err.code? err.msg : err
                 });
             }
-            response.response = response.person;
-            delete response.person;
+            response.success && (req.result.rest = process.env.HOSTNAME || 'Rest');
             res.status(response.success? 201 : 500).json(response);
         });
     }
@@ -85,7 +85,7 @@ class RestServer {
                 request.error = result.error;
                 return next();
             }
-            request.person = result.person;
+            request.result = result.response;
             return next();
         });
     }
