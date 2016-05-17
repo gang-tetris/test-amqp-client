@@ -66,7 +66,7 @@ class RestServer {
                     error: err.code? err.msg : err
                 });
             }
-            response.success && (req.result.rest = process.env.HOSTNAME || 'Rest');
+            response.success && (response.response.rest = process.env.HOSTNAME || 'Rest');
             res.status(response.success? 201 : 500).json(response);
         });
     }
